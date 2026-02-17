@@ -10,6 +10,7 @@ export const getUsersForSidebar = async(req, res) => {
 
     //   Count number of messages not seen
     const unseenMessages = {}
+
     const promises = filterUser.map(async(user)=> {
       const messages = await Message.find({
         senderId: user._id,
@@ -26,4 +27,30 @@ export const getUsersForSidebar = async(req, res) => {
       console.log(error.message)
       res.json({success: false, message: error.message})
    }
+}
+
+// Gel all message  for selected user
+
+export const getMessages = async(req, res) => {
+    try {
+        const { id: selectedUserId } = req.params
+        const myId = req.user._id
+
+        const messages = await Message.find({
+            $or: [
+                {senderId: myId, receiverId: selectedUserId},
+                {senderId: selectedUserId, receiverId: myId}
+            ]
+        })
+
+        await Message.updateMany({
+            senderId: selectedUserId,
+            receiverId: myId
+        }, {seen: true})
+
+        res.json({success: true, messages})
+    } catch (error) {
+        console.log(error.message)
+        res.json({success: false, message: error.message})
+    }
 }
