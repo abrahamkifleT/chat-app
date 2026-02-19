@@ -1,8 +1,11 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import assets, { userDummyData } from '../assets/assets'
 import { useNavigate } from 'react-router-dom'
+import { AuthContext } from '../../context/AuthContext'
 
 const SideBar = ({ selectedUser, setSelectedUser }) => {
+
+  const { logout } = useContext(AuthContext)
 
   const navigate = useNavigate();
 
@@ -15,9 +18,9 @@ const SideBar = ({ selectedUser, setSelectedUser }) => {
             <img src={assets.menu_icon} alt="menu" className='max-h-5 cursor-pointer' />
 
             <div className='absolute top-full right-0 z-20 w-32 p-5 rounded-md bg-[#282142] border border-gray-600 text-gray-100 hidden group-hover:block'>
-              <p onClick={()=> navigate("/profile")} className='cursor-pointer text-sm'>Edit Profile</p>
+              <p onClick={() => navigate("/profile")} className='cursor-pointer text-sm'>Edit Profile</p>
               <hr className='my-2 border-t border-gray-500' />
-              <p className='cursor-pointer text-sm'>Logout</p>
+              <p onClick={logout} className='cursor-pointer text-sm'>Logout</p>
             </div>
           </div>
         </div>
@@ -29,11 +32,11 @@ const SideBar = ({ selectedUser, setSelectedUser }) => {
       </div>
 
       <div className='flex flex-col'>
-         {
+        {
           userDummyData.map((user, index) => (
-            <div onClick={ () => setSelectedUser(user)} 
-            key={index} className={`relative flex items-center gap-2 p-2 pl-4 rounded cursor-pointer max-sm:text-sm ${selectedUser?._id === user._id && 'bg-[282142]/50'}`}>
-              <img src={user?.profilePic || assets.avatar_icon} alt="user" className='w-[35px] aspect-square rounded-full'/>
+            <div onClick={() => setSelectedUser(user)}
+              key={index} className={`relative flex items-center gap-2 p-2 pl-4 rounded cursor-pointer max-sm:text-sm ${selectedUser?._id === user._id && 'bg-[282142]/50'}`}>
+              <img src={user?.profilePic || assets.avatar_icon} alt="user" className='w-[35px] aspect-square rounded-full' />
               <div className='flex flex-col leading-5'>
                 <p>{user.fullName}</p>
                 {
@@ -45,7 +48,7 @@ const SideBar = ({ selectedUser, setSelectedUser }) => {
               }
             </div>
           ))
-         }
+        }
       </div>
     </div>
   )
