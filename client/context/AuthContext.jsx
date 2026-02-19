@@ -21,8 +21,8 @@ export const AuthContextProvider = ({ children }) => {
         try {
             const { data } = await axios.get("/api/auth/check");
             if (data.success) {
-                setAuthUser(data.user)
-                connectSocket(data.user)
+                setAuthUser(data.userData)
+                connectSocket(data.userData)
             }
         } catch (error) {
             toast.error(error.message)
@@ -72,7 +72,7 @@ export const AuthContextProvider = ({ children }) => {
             const { data } = await axios.put("/api/auth/update-profile", body)
 
             if (data.success) {
-                setAuthUser(data.user)
+                setAuthUser(data.userData)
                 toast.success("profile updated successfully")
             }
         } catch (error) {
