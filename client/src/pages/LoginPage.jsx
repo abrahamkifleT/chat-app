@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import assets from '../assets/assets'
+import { AuthContext } from '../../context/authContext'
 
 const LoginPage = () => {
   const [currentState, setCurrentState] = useState("Sign Up")
@@ -7,15 +8,20 @@ const LoginPage = () => {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [bio, setBio] = useState("")
-  const [isDataSubmitted, setIsDataSubmitted] = useState(true)
+  const [isDataSubmitted, setIsDataSubmitted] = useState(false)
+
+
+  const { login } = useContext(AuthContext)
 
   const onSubmitHandler = (event) => {
     event.preventDefault();
-    
-    if(currentState === "Sign Up" && !isDataSubmitted){
+
+    if (currentState === "Sign Up" && !isDataSubmitted) {
       setIsDataSubmitted(true);
       return
     }
+
+    login(currentState === "Sign Up" ? 'signup' : 'login', { fullName, email, password, bio })
   }
 
   return (
@@ -47,7 +53,7 @@ const LoginPage = () => {
 
         {
           currentState === "Sign Up" && isDataSubmitted && (
-            <textarea onChange={() => setBio(e.target.value)} value={bio} rows={4} className='p-2 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500' placeholder='Write your bio...' required></textarea>
+            <textarea onChange={(e) => setBio(e.target.value)} value={bio} rows={4} className='p-2 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500' placeholder='Write your bio...' required></textarea>
           )
         }
 
@@ -64,7 +70,7 @@ const LoginPage = () => {
               <p className='text-sm text-gray-600'>Already have an account? <span onClick={() => { setCurrentState("Login"); setIsDataSubmitted(false) }} className='font-medium text-violet-500 cursor-pointer'>Login here</span></p>
             ) : (
               <p className='text-sm text-gray-600'>
-                Create an account <span onClick={() => { setCurrentState("Sign Up"); }} className='font-medium text-violet-500 cursor-pointer'>click here</span>
+                Create an account <span onClick={() => { setCurrentState("Sign Up"); setIsDataSubmitted(false) }} className='font-medium text-violet-500 cursor-pointer'>click here</span>
               </p>
             )
           }
