@@ -8,7 +8,7 @@ const SideBar = () => {
 
   const { getUsers, users, selectedUser, setSelectedUser, unseenMessages, setUnseenMessages } = useContext(ChatContext)
 
-  const { logout, onlineuser } = useContext(AuthContext)
+  const { logout, onlineUser } = useContext(AuthContext)
   const [input, setInput] = useState(false)
 
   const navigate = useNavigate();
@@ -17,7 +17,7 @@ const SideBar = () => {
 
   useEffect(() => {
     getUsers()
-  }, [onlineuser])
+  }, [onlineUser])
 
   return (
     <div className={`bg-[#8185B2]/10 h-full p-5 rounded-r-xl overflow-y-scroll text-white ${selectedUser ? "max-md:hidden" : ""}`}>
@@ -50,7 +50,7 @@ const SideBar = () => {
               <div className='flex flex-col leading-5'>
                 <p>{user.fullName}</p>
                 {
-                  onlineuser.includes(user._id) ? <span className='text-green-400 text-xs '>Online</span> : <span className='text-neutral-400 text-xs'>Offline</span>
+                  onlineUser.includes(user._id) ? <span className='text-green-400 text-xs '>Online</span> : <span className='text-neutral-400 text-xs'>Offline</span>
                 }
               </div>
               {
