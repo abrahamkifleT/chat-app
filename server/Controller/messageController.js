@@ -87,7 +87,7 @@ export const sendMessage = async (req, res) => {
             senderId,
             receiverId,
             text,
-            imageUrl
+            image: imageUrl
         })
 
         // Emit the new message to the receiver's socket
@@ -96,7 +96,7 @@ export const sendMessage = async (req, res) => {
             io.to(receiverSocketId).emit("newMessage", newMessage)
         }
 
-        res.json({ success: true, message: newMessage })
+        res.json({ success: true, newMessage: newMessage })
     } catch (error) {
         console.log(error)
         res.json({ success: false, message: error.message })
