@@ -61,6 +61,7 @@ export const AuthContextProvider = ({ children }) => {
             axios.defaults.headers.common["token"] = null
             toast.success("Logout successful")
             socket.disconnect()
+            setSocket(null)
         } catch (error) {
             toast.error(error.message)
         }
@@ -93,8 +94,8 @@ export const AuthContextProvider = ({ children }) => {
         newSocket.connect();
         setSocket(newSocket)
 
-        newSocket.on("getOnlineUsers", () => {
-            setOnlineUser(userId)
+        newSocket.on("getOnlineUsers", (userIds) => {
+            setOnlineUser(userIds)
         })
     }
 
