@@ -1,14 +1,34 @@
-import React, {useEffect, useRef } from 'react'
+import React, { useContext,useState, useEffect, useRef } from 'react'
 import assets, { messagesDummyData } from '../assets/assets'
 import { formatMessageTime } from '../lib/utils';
+import { ChatContext } from '../../context/ChatContext'
+import { AuthContext } from '../../context/AuthContext';
 
-const ChatContainer = ({ selectedUser, setSelectedUser }) => {
+const ChatContainer = () => {
+
+  const { message, selectedUser, setSelectedUser, sendMessage,
+    getMessage } = useContext(ChatContext)
+  const { authUser, onlineUser } = useContext(AuthContext)
+
 
   const scrollEnd = useRef();
 
+  const [input, setInput] = useState("")
+
+  // handle send message
+  const handleSendMessage = async(e) => {
+      e.preventDefault(); 
+      if(input.trim() === "") return null;
+      await sendMessage({text: input.trim()})
+      setInput("")
+  }
+
+  // 
+
+
   useEffect(() => {
-    if(scrollEnd.current){
-      scrollEnd.current.scrollIntoView({behavior: "smooth"})
+    if (scrollEnd.current) {
+      scrollEnd.current.scrollIntoView({ behavior: "smooth" })
     }
   }, [messagesDummyData])
 
@@ -29,8 +49,8 @@ const ChatContainer = ({ selectedUser, setSelectedUser }) => {
           messagesDummyData.map((message, index) => (
             <div key={index} className={`flex items-end gap-2 justify-end ${message.senderId !== "680f5116f10f3cd28382ed02" && "flex-row-reverse"}`}>
               {
-              message.image ? (<img src={message.image} alt="" className='max-w-[230px] border border-gray-700 rounded-lg overflow-hidden mb-8'/>) : (<p className={`p-2 max-w-[200px] md:text-sm font-light rounded-lg mb-8 break-all bg-violet-500/30 text-white ${message.senderId === "680f5116f10f3cd28382ed02" ? "rounded-br-none" : "rounded-bl-none"}`}>{message.text}</p>
-              )
+                message.image ? (<img src={message.image} alt="" className='max-w-[230px] border border-gray-700 rounded-lg overflow-hidden mb-8' />) : (<p className={`p-2 max-w-[200px] md:text-sm font-light rounded-lg mb-8 break-all bg-violet-500/30 text-white ${message.senderId === "680f5116f10f3cd28382ed02" ? "rounded-br-none" : "rounded-bl-none"}`}>{message.text}</p>
+                )
               }
 
               <div className='text-center text-xs'>
@@ -40,21 +60,21 @@ const ChatContainer = ({ selectedUser, setSelectedUser }) => {
             </div>
           ))
         }
-      <div ref={scrollEnd}></div>
+        <div ref={scrollEnd}></div>
       </div>
 
       {/* -------------- Bottom Area ----------- */}
 
       <div className='absolute bottom-0 left-0 right-0 flex item-center gap-3 p-3'>
         <div className='flex-1 flex items-center bg-gray-100/12 px-3 rounded-full'>
-          <input type="text" placeholder='send a message' 
-          className='flex-1 text-sm p-3 border-none rounded-lg outline-none text-white placeholder-gray-400'/>
-          <input type="file" id='image' accept='image/png, image/jpeg' hidden/>
+          <input onChange={(e) => setInput(e.target.value)} value={input} onKeyDown={(e) => e.key === "Enter" ? handleSendMessage(e) : null} type="text" placeholder='send a message'
+            className='flex-1 text-sm p-3 border-none rounded-lg outline-none text-white placeholder-gray-400' />
+          <input type="file" id='image' accept='image/png, image/jpeg' hidden />
           <label htmlFor="image">
-            <img src={assets.gallery_icon} alt="" className='w-5 mr-2 cursor-pointer'/>
+            <img src={assets.gallery_icon} alt="" className='w-5 mr-2 cursor-pointer' />
           </label>
         </div>
-        <img src={assets.send_button} alt="" className='w-7 cursor-pointer'/>
+        <img onClick={handleSendMessage} src={assets.send_button} alt="" className='w-7 cursor-pointer' />
       </div>
     </div>
   ) : (
