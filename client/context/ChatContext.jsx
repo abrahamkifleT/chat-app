@@ -12,7 +12,7 @@ export const ChatProvider = ({ children }) => {
     const [selectedUser, setSelectedUser] = useState(null)
     const [unseenMessages, setUnseenMessages] = useState({})
 
-    const { socket, axios } = useContext(AuthContext)
+    const { socket, axios, authUser } = useContext(AuthContext)
 
     // function to get all users for sidebar
     const getUsers = async () => {
@@ -43,15 +43,33 @@ export const ChatProvider = ({ children }) => {
 
     //  send message to a selected user
     const sendMessage = async (messageData) => {
+        const optimisticId = Date.now().toString();
+        const optimisticMessage = {
+            _id: optimisticId,
+            senderId: authUser?._id,
+            receiverId: selectedUser._id,
+            ...messageData,
+            createdAt: new Date().toISOString(),
+            isOptimistic: true,
+        };
+
+        setMessages((prevMessages) => [...prevMessages, optimisticMessage]);
+
         try {
             const { data } = await axios.post(`/api/messages/send/${selectedUser._id}`, messageData)
 
             if (data.success) {
-                setMessages((prevMessages) => [...prevMessages, data.newMessage])
+                setMessages((prevMessages) =>
+                    prevMessages.map((msg) =>
+                        msg._id === optimisticId ? data.newMessage : msg
+                    )
+                );
             } else {
+                setMessages((prevMessages) => prevMessages.filter((msg) => msg._id !== optimisticId));
                 toast.error(data.message)
             }
         } catch (error) {
+            setMessages((prevMessages) => prevMessages.filter((msg) => msg._id !== optimisticId));
             toast.error(error.message)
         }
     }
@@ -80,7 +98,7 @@ export const ChatProvider = ({ children }) => {
 
     useEffect(() => {
         subscribeToMessags()
-        return () => unSubscribeFromMessages
+        return () => unSubscribeFromMessages()
     }, [socket, selectedUser])
 
 
